@@ -166,7 +166,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .hero-device .device{position:relative}
 
 /* ==========================================================================
-   5. スマホ枠 + 画面モック(390×820 で作り、zoom で縮小)
+   5. スマホ枠 + 画面モック(390×820 で作り、transform: scale で縮小)
    実際のスクリーンショットは assets/screenshots/ に同名ファイルを置くだけで差し替わる
    ========================================================================== */
 .device{--w:270px;--z:.6667;width:var(--w);padding:5px;border-radius:38px;background:#34362F;box-shadow:0 24px 60px rgba(40,36,30,.22),0 2px 6px rgba(40,36,30,.12)}
@@ -174,7 +174,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .device-screen{position:relative;width:100%;aspect-ratio:390/820;border-radius:33px;overflow:hidden;background:var(--color-washi)}
 .device-screen .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;z-index:1}
 .device.has-shot .mock{visibility:hidden}
-.mock{width:390px;height:820px;zoom:var(--z);position:relative;display:flex;flex-direction:column;background:var(--color-washi);color:var(--color-ink-body);font-family:var(--font-sans);line-height:1.5;text-align:left;pointer-events:none;user-select:none}
+.mock{width:390px;height:820px;transform:scale(var(--z));transform-origin:0 0;position:relative;display:flex;flex-direction:column;background:var(--color-washi);color:var(--color-ink-body);font-family:var(--font-sans);line-height:1.5;text-align:left;pointer-events:none;user-select:none}
 .mock *{margin:0}
 
 /* --- 共通:ボトムナビ --- */
