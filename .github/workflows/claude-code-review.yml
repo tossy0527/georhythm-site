@@ -1,0 +1,66 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            このリポジトリ(アプリ「ジオリズム」の公開用静的サイト。GitHub Pagesで配信する
+            プライバシーポリシーとランディングページ)のPull Requestをレビューしてください。
+            良い点は省略し、悪い点のみに焦点をあててください。ただし、これは「悪い点を
+            必ずひねり出せ」という意味ではありません。指摘すべき点が無ければ、無理に
+            見つけ出そうとせず「大きな懸念は見当たらない」とだけ短く述べて終えてください。
+
+            観点:
+            - HTML/CSSの品質・ベストプラクティス(構文ミス、リンク切れ、モバイル表示の崩れ、アクセシビリティ)
+            - セキュリティ上の懸念(APIキー・トークン等の秘密情報や個人情報の混入、出所不明の外部スクリプト/リソースの読み込み)
+            - プライバシーポリシーの内容に矛盾・誤記が無いか。アプリの原則は「保存する位置データは
+              登録場所の座標と滞在セッションのみで、移動経路は記録しない」。これと食い違う記述を
+              追加・変更していないか(原本は別リポジトリgeobenの`documents/privacy_policy.md`で、
+              このリポジトリからは参照できないため、原本との照合が必要そうな変更であれば
+              その旨を一言添えるだけでよい)
+
+            PRブランチは既にカレントディレクトリにチェックアウト済みです。
+
+            **このPRに対する過去のレビュー回数に応じて、指摘の重大度の閾値を上げてください**:
+            まず `gh pr view <PR番号> --json comments` で、これまでに自分(Claude)が
+            投稿したレビューコメントの件数を確認してください。
+            - 1〜2回目: 通常通りレビューしてください。
+            - 3回目以降: **具体的な再現手順(どんな入力・状態で何が壊れるか)を示せる
+              バグ・セキュリティ問題・プライバシーポリシーの事実誤認のみ**を指摘してください。
+              スタイル・命名、「理論上はあり得る」程度のエッジケース、好みが分かれるだけの
+              デザイン判断への異論は指摘しないでください。
+            - 既存のレビューコメントとその返信も読み、**同じ論点を表現を変えて蒸し返さない**
+              でください(例: 開発者が理由を添えて対応済み・または見送ると回答した論点を、
+              別の角度から再度問題視しない)。
+
+            **分量を抑えること**: 重大な指摘(バグ・セキュリティ・ポリシーの誤記)を優先し、軽微なスタイル・命名の指摘は原則省略してください。トップレベルの総評は箇条書き3〜5行程度に収めてください。インラインコメントは1箇所につき2〜3文以内とし、指摘理由と修正方針を簡潔に述べてください(コード全文の引用や長い代替実装例は書かない)。
+
+            トップレベルの総評には `gh pr comment` を使ってください。
+            具体的な指摘箇所には `mcp__github_inline_comment__create_inline_comment`(`confirmed: true`)でインラインコメントしてください。
+            GitHub上へのコメント投稿のみを行い、レビュー内容をメッセージとして出力しないでください。
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
