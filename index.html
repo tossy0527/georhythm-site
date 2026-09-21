@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ジオリズム — 勉強・作業時間を、場所で自動記録</title>
-<meta name="description" content="カフェや図書館などのいつもの場所を登録しておくだけ。着いたら記録がはじまり、離れると終わります。タイマー操作のいらない、勉強・作業時間の記録アプリ(Android)。">
+<meta name="description" content="カフェや図書館などのいつもの場所を登録しておくだけ。着いたら自動で記録がはじまり、離れると終わります。タイマー操作のいらない、勉強・作業時間の記録アプリ(Android)。">
 <meta name="theme-color" content="#F8F4EA">
 <link rel="canonical" href="https://tossy0527.github.io/georhythm-site/">
 <link rel="icon" type="image/png" href="assets/icon-512.png">
@@ -367,9 +367,15 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 .btn-copy .ms,.btn-mail .ms{font-size:20px}
 .btn-copy{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
 .btn-copy:hover{background:rgba(95,122,84,.08)}
-/* 「コピーしました」⇔「アドレスをコピー」は、消えてから入れ替わり、ふわっと現れる */
-.btn-copy .ms,#contact-copy-label{transition:opacity .22s ease}
-.btn-copy.is-swapping .ms,.btn-copy.is-swapping #contact-copy-label{opacity:0}
+/* 「アドレスをコピー」と「コピーしました」を同じ位置に重ね、不透明度だけを入れ替える(クロスフェード)。
+   コピー直後は素早く(.12s)、元に戻るときはゆっくり(.4s)。移行先の状態の transition が使われる */
+.btn-copy .stack{display:grid;justify-items:center}
+.btn-copy .layer{grid-area:1/1;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .4s ease}
+.btn-copy .layer.done{opacity:0}
+.btn-copy.is-copied .layer.idle{opacity:0}
+.btn-copy.is-copied .layer.done{opacity:1}
+.btn-copy.is-copied .layer{transition-duration:.12s}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .btn-copy:focus-visible,.btn-mail:focus-visible,.dlg-close:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px}
 </style>
 </head>
@@ -702,7 +708,13 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     <p class="dlg-addr" id="contact-addr">unagi.laboratory+georhythm@gmail.com</p>
     <div class="dlg-actions">
       <a class="btn-mail" href="mailto:unagi.laboratory+georhythm@gmail.com?subject=%E3%82%B8%E3%82%AA%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" autofocus><span class="ms">mail</span>メールアプリで開く</a>
-      <button type="button" class="btn-copy" id="contact-copy"><span class="ms" id="contact-copy-icon">content_copy</span><span id="contact-copy-label" aria-live="polite">アドレスをコピー</span></button>
+      <button type="button" class="btn-copy" id="contact-copy">
+        <span class="stack">
+          <span class="layer idle"><span class="ms">content_copy</span><span>アドレスをコピー</span></span>
+          <span class="layer done" aria-hidden="true"><span class="ms" id="contact-copy-icon">check</span><span id="contact-copy-label">コピーしました</span></span>
+        </span>
+      </button>
+      <span class="sr-only" id="contact-copy-status" role="status" aria-live="polite"></span>
     </div>
   </div>
 </dialog>
@@ -730,29 +742,25 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
   var dlg = document.getElementById('contact');
   if (!link || !dlg || typeof dlg.showModal !== 'function') return;
   var btn = document.getElementById('contact-copy');
-  var label = document.getElementById('contact-copy-label');
-  var icon = document.getElementById('contact-copy-icon');
+  var doneIcon = document.getElementById('contact-copy-icon');
+  var doneLabel = document.getElementById('contact-copy-label');
+  var status = document.getElementById('contact-copy-status');
   var addr = document.getElementById('contact-addr').textContent.trim();
-  var timer, swapTimer;
+  var timer;
 
-  function setLabel(text, iconName) { label.textContent = text; icon.textContent = iconName; }
-  // 一度フェードアウトしてから文言を入れ替え、フェードインさせる
-  function fadeTo(text, iconName) {
-    clearTimeout(swapTimer);
-    btn.classList.add('is-swapping');
-    swapTimer = setTimeout(function () { setLabel(text, iconName); btn.classList.remove('is-swapping'); }, 220);
-  }
-  // 開閉時は即座に初期状態へ(画面に見えていないのでフェード不要)
+  // 見た目は CSS のクロスフェード(.is-copied の付け外し)。読み上げは別の status 領域で行う
   function reset() {
     clearTimeout(timer);
-    clearTimeout(swapTimer);
-    btn.classList.remove('is-swapping');
-    setLabel('アドレスをコピー', 'content_copy');
+    btn.classList.remove('is-copied');
+    status.textContent = '';
   }
   function done(ok) {
-    fadeTo(ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください', ok ? 'check' : 'content_copy');
+    doneLabel.textContent = ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください';
+    doneIcon.textContent = ok ? 'check' : 'content_copy';
+    status.textContent = doneLabel.textContent;
+    btn.classList.add('is-copied');
     clearTimeout(timer);
-    timer = setTimeout(function () { fadeTo('アドレスをコピー', 'content_copy'); }, 2600);
+    timer = setTimeout(reset, 2600);
   }
   // Clipboard API が使えない環境(古いブラウザ・非HTTPS)向け。モーダル中は外の要素を選択できないため、ダイアログ内に一時的に置く
   function legacyCopy() {
