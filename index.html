@@ -361,11 +361,12 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 .dlg-addr{margin:16px 0 20px;padding:14px 10px;border-radius:14px;background:var(--color-card);border:1px solid rgba(58,54,48,.16);text-align:center;font-size:clamp(.8rem,3.7vw,.98rem);letter-spacing:0;line-height:1.6;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
 .dlg-actions{display:flex;flex-direction:column;gap:10px}
 .btn-copy,.btn-mail{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:999px;font-family:inherit;font-size:.95rem;font-weight:600;letter-spacing:.03em;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.btn-copy{border:1px solid var(--color-moss-deep);background:var(--color-moss-deep);color:var(--color-seg-sel)}
-.btn-copy:hover{filter:brightness(1.08)}
+/* 主ボタン=メールアプリで開く(緑)/ 副ボタン=アドレスをコピー(枠のみ) */
+.btn-mail{border:1px solid var(--color-moss-deep);background:var(--color-moss-deep);color:var(--color-seg-sel)}
+.btn-mail:hover{filter:brightness(1.08)}
 .btn-copy .ms,.btn-mail .ms{font-size:20px}
-.btn-mail{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
-.btn-mail:hover{background:rgba(95,122,84,.08)}
+.btn-copy{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
+.btn-copy:hover{background:rgba(95,122,84,.08)}
 .btn-copy:focus-visible,.btn-mail:focus-visible,.dlg-close:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px}
 </style>
 </head>
@@ -634,7 +635,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     <div class="faq reveal">
       <details>
         <summary><span class="q">バッテリー消費はどれくらいありますか?</span><span class="ms">expand_more</span></summary>
-        <p>OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知するので、バッテリーへの負担はほとんどありません。</p>
+        <p>バッテリー消費はほとんどありません。通常の常時GPS測定と違って、OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知することで、バッテリーへの負担を大幅に抑えています。</p>
       </details>
       <details>
         <summary><span class="q">記録の時刻がずれることはありますか?</span><span class="ms">expand_more</span></summary>
@@ -647,11 +648,11 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
       </details>
       <details>
         <summary><span class="q">場所を登録していなくても記録できますか?</span><span class="ms">expand_more</span></summary>
-        <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることもできます。</p>
+        <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることができます。</p>
       </details>
       <details>
         <summary><span class="q">まちがって記録されたときは?</span><span class="ms">expand_more</span></summary>
-        <p>「あしあと」画面から、記録を編集したり削除したりできます。</p>
+        <p>「あしあと」画面から、記録の編集や削除ができます。</p>
       </details>
       <details>
         <summary><span class="q">iPhoneでも使えますか?</span><span class="ms">expand_more</span></summary>
@@ -693,8 +694,8 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     <p class="dlg-text">ご質問・ご要望・不具合のご連絡は、次のメールアドレスまでお願いします。</p>
     <p class="dlg-addr" id="contact-addr">unagi.laboratory+georhythm@gmail.com</p>
     <div class="dlg-actions">
-      <button type="button" class="btn-copy" id="contact-copy" autofocus><span class="ms" id="contact-copy-icon">content_copy</span><span id="contact-copy-label" aria-live="polite">アドレスをコピー</span></button>
-      <a class="btn-mail" href="mailto:unagi.laboratory+georhythm@gmail.com?subject=%E3%82%B8%E3%82%AA%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"><span class="ms">mail</span>メールアプリで開く</a>
+      <a class="btn-mail" href="mailto:unagi.laboratory+georhythm@gmail.com?subject=%E3%82%B8%E3%82%AA%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" autofocus><span class="ms">mail</span>メールアプリで開く</a>
+      <button type="button" class="btn-copy" id="contact-copy"><span class="ms" id="contact-copy-icon">content_copy</span><span id="contact-copy-label" aria-live="polite">アドレスをコピー</span></button>
     </div>
   </div>
 </dialog>
