@@ -368,13 +368,13 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 .btn-copy{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
 .btn-copy:hover{background:rgba(95,122,84,.08)}
 /* 「アドレスをコピー」と「コピーしました」を同じ位置に重ね、不透明度だけを入れ替える(クロスフェード)。
-   コピー直後は素早く(.12s)、元に戻るときはゆっくり(.4s)。移行先の状態の transition が使われる */
+   コピー直後はほぼ一瞬(.06s)、元に戻るときはゆっくり(.4s)。移行先の状態の transition が使われる */
 .btn-copy .stack{display:grid;justify-items:center}
 .btn-copy .layer{grid-area:1/1;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .4s ease}
 .btn-copy .layer.done{opacity:0}
 .btn-copy.is-copied .layer.idle{opacity:0}
 .btn-copy.is-copied .layer.done{opacity:1}
-.btn-copy.is-copied .layer{transition-duration:.12s}
+.btn-copy.is-copied .layer{transition-duration:.06s}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .btn-copy:focus-visible,.btn-mail:focus-visible,.dlg-close:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px}
 </style>
