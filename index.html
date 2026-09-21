@@ -273,7 +273,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
   border-radius:48% 52% 55% 45% / 50% 46% 54% 50%;background:var(--grad-moss-1),var(--grad-moss-2)}
 .step h3{font-family:var(--font-serif);font-weight:600;font-size:1.15rem;color:var(--color-ink-title);margin-bottom:6px}
 .step p{font-size:.95rem;color:var(--color-ink-soft-2);text-wrap:pretty}
-.fit{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.fit{margin:36px auto 0;max-width:640px}
+.fit .fit-box{text-align:center;text-wrap:balance}
 .fit-box{text-wrap:pretty;padding:20px 24px;border-radius:16px;background:rgba(255,253,246,.55);border:1px solid var(--color-line);font-size:.93rem;color:var(--color-ink-soft-2)}
 .fit-box h3{font-size:.85rem;letter-spacing:.1em;color:var(--color-moss-deep);margin-bottom:4px;font-weight:600}
 
@@ -281,9 +282,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
    7. 画面紹介
    ========================================================================== */
 .screens{background:linear-gradient(180deg,transparent,rgba(234,228,211,.45) 18%,rgba(234,228,211,.45) 82%,transparent)}
-.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;justify-items:center;max-width:720px;margin-inline:auto}
+.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;justify-items:center;align-items:start;max-width:720px;margin-inline:auto}
 .shot-fig{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;max-width:300px}
-.shot-fig:nth-child(2){margin-top:36px}
 .shot-fig figcaption strong{display:block;font-family:var(--font-serif);font-weight:600;font-size:1.05rem;color:var(--color-ink-title);margin-bottom:2px}
 .shot-fig figcaption span{font-size:.9rem;color:var(--color-ink-soft-2);display:block;text-wrap:pretty}
 
@@ -310,7 +310,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .faq summary::-webkit-details-marker{display:none}
 .faq summary .ms{color:var(--color-sub);transition:transform .4s var(--ease-quint)}
 .faq details[open] summary .ms{transform:rotate(180deg)}
-.faq details p{padding:0 4px 20px;color:var(--color-ink-soft-2);font-size:.95rem;text-wrap:pretty}
+.faq details p:last-child{padding-bottom:20px}
+.faq details p{padding:0 4px 12px;color:var(--color-ink-soft-2);font-size:.95rem;text-wrap:pretty}
 
 /* ==========================================================================
    10. 締め
@@ -329,7 +330,6 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
   .steps,.shots,.safe-grid,.fit{grid-template-columns:1fr}
   .steps{max-width:520px;margin-inline:auto}
   .fit,.safe-grid{max-width:560px;margin-inline:auto}
-  .shot-fig:nth-child(2){margin-top:0}
   .shots{gap:48px}
 }
 @media (max-width:420px){
@@ -413,7 +413,6 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
     <div class="section-head reveal">
       <p class="eyebrow">はじめかた</p>
       <h2 class="h2">一度設定したら、あとは放置</h2>
-      <p class="lead">記録のためにアプリを開く場面は、ほとんどありません。</p>
     </div>
 
     <div class="steps">
@@ -425,7 +424,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
       <div class="step reveal">
         <div class="step-num">2</div>
         <h3>あとは放置</h3>
-        <p>登録した場所に着くと記録がはじまり、離れると終わります。タイマーも、開始・停止のボタンもありません。</p>
+        <p>登録した場所に着くと記録がはじまり、離れると終わります。記録のためにアプリを開く必要はありません。</p>
       </div>
       <div class="step reveal">
         <div class="step-num">3</div>
@@ -437,11 +436,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
     <div class="fit reveal">
       <div class="fit-box">
         <h3>こんな方に</h3>
-        カフェや図書館に通って、資格の勉強や仕事をする方。記録を続けるのが苦手だった方。「今週どれくらいやったか」がざっくり分かれば十分、という方。
-      </div>
-      <div class="fit-box">
-        <h3>向いていないかも</h3>
-        自宅がメインの方は、生活の時間と区別できないため向いていません。分単位の正確な工数管理が必要な方にも、おすすめしません。
+        カフェや図書館に通って、資格の勉強や仕事をする方。記録を続けるのが苦手だった方。
       </div>
     </div>
   </div>
@@ -497,7 +492,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
             </div>
           </div>
         </div>
-        <figcaption><strong>レポート</strong><span>場所ごとに、どれくらい籠ったか。時間・回数・一回の平均を、1枚のカードで。</span></figcaption>
+        <figcaption><strong>レポート</strong><span>場所ごとの積み上げ。カードをタップすることでより詳細な情報も確認できます。</span></figcaption>
       </figure>
 
       <!-- あしあと -->
@@ -571,7 +566,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
   <div class="wrap">
     <div class="section-head reveal">
       <p class="eyebrow">位置情報について</p>
-      <h2 class="h2">見張らないための、しくみ</h2>
+      <h2 class="h2">プライバシーへの配慮としくみ</h2>
       <p class="lead">位置情報を使うアプリだからこそ、何を記録して、何を記録しないかを、はっきりさせています。</p>
     </div>
 
@@ -588,7 +583,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
         <ul>
           <li><span class="ms">close</span>移動の経路</li>
           <li><span class="ms">close</span>登録した場所以外での位置</li>
-          <li><span class="ms">close</span>常時のGPS測位(場所への出入りだけをOSの機能で検知します)</li>
+          <li><span class="ms">close</span>常時のGPS測定(場所への出入りのみを検知しています)</li>
         </ul>
       </div>
     </div>
@@ -601,34 +596,30 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 <section class="section" id="faq" style="padding-top:0">
   <div class="wrap">
     <div class="section-head reveal">
-      <p class="eyebrow">よくある質問</p>
-      <h2 class="h2">気になること</h2>
+      <h2 class="h2">よくある質問</h2>
     </div>
 
     <div class="faq reveal">
       <details>
-        <summary>バッテリーは大丈夫ですか?<span class="ms">expand_more</span></summary>
-        <p>常時GPSは使いません。OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知するので、電池への負担が小さくなるようにしています。</p>
+        <summary>バッテリー消費はどれくらいありますか?<span class="ms">expand_more</span></summary>
+        <p>OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知するので、バッテリーへの負担はほとんどありません。</p>
       </details>
       <details>
         <summary>記録の時刻がずれることはありますか?<span class="ms">expand_more</span></summary>
-        <p>場所への出入りの検知には、数分ほどの遅れが出ることがあります。ジオリズムは「今週どれくらいやったか」をざっくり把握するためのアプリなので、この遅れは補正していません。</p>
+        <p>場所への出入りの検知には、数分ほどの遅れが出ることがあります。ジオリズムは積み上げを手間なく・おおまかに把握するためのアプリなので、この遅れは補正していません。</p>
+        <p>細かい時間の修正は、「あしあと」画面から行うことができます。</p>
       </details>
       <details>
-        <summary>ちょっと立ち寄っただけでも記録されますか?<span class="ms">expand_more</span></summary>
+        <summary>登録した場所の近くを通るだけでも記録されてしまうのでしょうか?<span class="ms">expand_more</span></summary>
         <p>初期設定では、15分に満たない滞在は記録しません。この時間は設定から変更できます。</p>
       </details>
       <details>
         <summary>場所を登録していなくても記録できますか?<span class="ms">expand_more</span></summary>
-        <p>ホーム画面から、手動で記録をはじめることもできます。</p>
+        <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることもできます。</p>
       </details>
       <details>
         <summary>まちがって記録されたときは?<span class="ms">expand_more</span></summary>
         <p>「あしあと」画面から、記録を編集したり削除したりできます。</p>
-      </details>
-      <details>
-        <summary>記録を手元に残せますか?<span class="ms">expand_more</span></summary>
-        <p>設定から、記録をCSVファイルとして書き出せます。</p>
       </details>
       <details>
         <summary>iPhoneでも使えますか?<span class="ms">expand_more</span></summary>
