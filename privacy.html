@@ -20,7 +20,7 @@
     line-height: 1.9;
     font-size: 16px;
   }
-  main { max-width: 720px; margin: 0 auto; padding: 48px 20px 80px; }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 20px 80px; }
   h1 { font-size: 1.5rem; color: var(--ink); margin-bottom: 4px; }
   .date { color: var(--ink-soft); font-size: .85rem; margin-bottom: 32px; }
   h2 { font-size: 1.1rem; color: var(--moss); margin: 36px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
@@ -36,9 +36,15 @@
   a { color: var(--moss); }
   footer { max-width: 720px; margin: 0 auto; padding: 0 20px 48px; color: var(--ink-soft); font-size: .85rem; }
   footer a { color: var(--ink-soft); }
+  .crumb { max-width: 720px; margin: 0 auto; padding: 20px 20px 0; display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--ink-soft); }
+  .crumb a { display: inline-block; padding: 8px 0; }
+  /* 文字にカーソル(I-beam・キャレット)が出ないようにする。テキストの選択・コピーはそのまま可能 */
+  body { cursor: default; caret-color: transparent; }
+  a, summary { cursor: pointer; }
 </style>
 </head>
 <body>
+<nav class="crumb" aria-label="パンくずリスト"><a href="./">ジオリズム</a><span aria-hidden="true">›</span><span aria-current="page">プライバシーポリシー</span></nav>
 <main>
   <h1>ジオリズム プライバシーポリシー</h1>
   <p class="date">制定日: 2026年7月18日</p>
@@ -72,14 +78,17 @@
   <p>最低滞在時間・通知のオン/オフなど、アプリの設定値。</p>
 
   <h3>1.6 取得しない情報</h3>
-  <p>移動経路・連絡先・写真・広告ID・端末内の他アプリの情報は取得しません。広告表示およびアクセス解析(アナリティクス)も行っていません。</p>
+  <p>移動経路・連絡先・写真・広告ID・端末内の他アプリの情報は取得しません。広告表示、および利用者の行動を追跡するアクセス解析(アナリティクス)も行っていません(クラッシュ・エラーの記録については1.7参照)。</p>
+
+  <h3>1.7 アプリの品質改善のための情報(クラッシュ・エラーの記録)</h3>
+  <p>本アプリが予期せず終了した場合や、通信エラーが発生した場合に、原因を特定して改善するため、Firebase Crashlyticsを通じて発生状況(エラー内容・発生箇所・端末の機種/OSバージョン・アプリのバージョン・匿名の識別子)を自動的に送信します。利用者が入力・操作した内容そのもの(検索キーワードや位置情報など)は送信しません。</p>
 
   <h2>2. 利用目的</h2>
   <p>取得した情報は、次の目的にのみ利用します。</p>
   <ul>
     <li>滞在の自動記録と、グラフ・履歴としての表示</li>
     <li>複数端末・機種変更時の記録の同期と引き継ぎ</li>
-    <li>利用者が設定した通知(記録の開始/終了、週のふりかえり)の表示(端末内で完結するローカル通知です)</li>
+    <li>利用者が設定した通知(記録の完了)の表示(端末内で完結するローカル通知です)</li>
   </ul>
 
   <h2>3. 外部サービスへの委託</h2>
@@ -89,7 +98,8 @@
       <tr><th>サービス</th><th>用途</th><th>送信される情報</th></tr>
       <tr><td>Firebase Authentication</td><td>アカウントの作成・認証</td><td>ユーザーID、(連携時)メールアドレス・パスワード</td></tr>
       <tr><td>Cloud Firestore</td><td>記録・設定の保存と同期(日本リージョン: asia-northeast1)</td><td>登録場所・滞在記録・設定</td></tr>
-      <tr><td>Google Maps / Places API</td><td>場所登録画面の地図表示と施設検索</td><td>地図の表示範囲、検索した施設名</td></tr>
+      <tr><td>Google Maps / Places API</td><td>場所登録画面の地図表示と施設検索</td><td>地図の表示範囲、検索した施設名、(近くの候補を優先するための)現在地の座標</td></tr>
+      <tr><td>Firebase Crashlytics</td><td>クラッシュ・エラーの検知と原因調査</td><td>エラー内容・発生箇所、端末の機種/OSバージョン、アプリのバージョン、匿名の識別子(Firebase Installation ID)</td></tr>
     </table>
   </div>
   <p>保存されたデータは、Firebaseのセキュリティルールにより本人のアカウントからのみ読み書きできます。</p>

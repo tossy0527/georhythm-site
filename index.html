@@ -87,6 +87,9 @@ body{
 }
 img{max-width:100%;display:block}
 a{color:var(--color-moss)}
+/* 文字にカーソル(I-beam・キャレット)が出ないようにする。テキストの選択・コピーはそのまま可能 */
+body{cursor:default;caret-color:transparent}
+a,summary{cursor:pointer}
 a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px;border-radius:6px}
 .wrap{max-width:var(--page-max);margin:0 auto;padding-inline:var(--gutter)}
 .ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;font-variation-settings:'FILL' 0;
@@ -304,14 +307,20 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 /* ==========================================================================
    9. FAQ
    ========================================================================== */
-.faq{max-width:720px;margin:0 auto}
-.faq details{border-bottom:1px solid var(--color-line)}
-.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 4px;font-weight:600;color:var(--color-ink-title)}
+.faq{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+/* 1問=1枚のカード。質問は濃く太く、回答は一段やわらかく。開いている間は質問行に淡い苔色を敷く */
+.faq details{background:var(--color-card);border:1px solid rgba(58,54,48,.16);border-radius:16px;overflow:hidden;transition:border-color .3s var(--ease-quint)}
+.faq details[open]{border-color:rgba(95,122,84,.45)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary .ms{color:var(--color-sub);transition:transform .4s var(--ease-quint)}
+.faq summary::before{content:"Q";flex:none;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(95,122,84,.14);color:var(--color-moss-deep);font-family:var(--font-serif);font-weight:600;font-size:.85rem;line-height:1}
+.faq summary .q{text-wrap:pretty;flex:1;font-weight:600;font-size:1.02rem;line-height:1.7;color:var(--color-ink-title)}
+.faq summary .ms{flex:none;color:var(--color-ink-soft);transition:transform .4s var(--ease-quint)}
+.faq summary:hover{background:rgba(95,122,84,.06)}
+.faq details[open] summary{background:rgba(95,122,84,.09);border-bottom:1px solid var(--color-line)}
 .faq details[open] summary .ms{transform:rotate(180deg)}
-.faq details p:last-child{padding-bottom:20px}
-.faq details p{padding:0 4px 12px;color:var(--color-ink-soft-2);font-size:.95rem;text-wrap:pretty}
+.faq details p{padding:14px 18px 0 58px;color:var(--color-ink-soft-2);font-size:.93rem;line-height:1.95;text-wrap:pretty}
+.faq details p:last-child{padding-bottom:18px}
 
 /* ==========================================================================
    10. 締め
@@ -334,6 +343,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 }
 @media (max-width:420px){
   .btn-pending{padding:12px 18px;font-size:.95rem}
+  .faq summary{padding:14px 14px;gap:12px}
+  .faq details p{padding-left:52px;padding-right:14px}
 }
 </style>
 </head>
@@ -436,7 +447,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
     <div class="fit reveal">
       <div class="fit-box">
         <h3>こんな方に</h3>
-        カフェや図書館に通って、資格の勉強や仕事をする方。記録を続けるのが苦手だった方。
+        カフェや図書館に通って、勉強や仕事をする方。手動での記録が続けられなかった方。
       </div>
     </div>
   </div>
@@ -601,28 +612,28 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 
     <div class="faq reveal">
       <details>
-        <summary>バッテリー消費はどれくらいありますか?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">バッテリー消費はどれくらいありますか?</span><span class="ms">expand_more</span></summary>
         <p>OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知するので、バッテリーへの負担はほとんどありません。</p>
       </details>
       <details>
-        <summary>記録の時刻がずれることはありますか?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">記録の時刻がずれることはありますか?</span><span class="ms">expand_more</span></summary>
         <p>場所への出入りの検知には、数分ほどの遅れが出ることがあります。ジオリズムは積み上げを手間なく・おおまかに把握するためのアプリなので、この遅れは補正していません。</p>
         <p>細かい時間の修正は、「あしあと」画面から行うことができます。</p>
       </details>
       <details>
-        <summary>登録した場所の近くを通るだけでも記録されてしまうのでしょうか?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">登録した場所の近くを通るだけでも記録されてしまうのでしょうか?</span><span class="ms">expand_more</span></summary>
         <p>初期設定では、15分に満たない滞在は記録しません。この時間は設定から変更できます。</p>
       </details>
       <details>
-        <summary>場所を登録していなくても記録できますか?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">場所を登録していなくても記録できますか?</span><span class="ms">expand_more</span></summary>
         <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることもできます。</p>
       </details>
       <details>
-        <summary>まちがって記録されたときは?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">まちがって記録されたときは?</span><span class="ms">expand_more</span></summary>
         <p>「あしあと」画面から、記録を編集したり削除したりできます。</p>
       </details>
       <details>
-        <summary>iPhoneでも使えますか?<span class="ms">expand_more</span></summary>
+        <summary><span class="q">iPhoneでも使えますか?</span><span class="ms">expand_more</span></summary>
         <p>現在は Android のみに対応しています。</p>
       </details>
     </div>
@@ -632,8 +643,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 <!-- ============================ 締め ============================ -->
 <section class="closing">
   <div class="wrap reveal">
-    <h2 class="h2">まもなく、公開します</h2>
-    <p class="lead" style="margin-top:8px">準備ができしだい、Google Play で公開します。</p>
+    <h2 class="h2">まもなく公開予定</h2>
     <div class="store">
       <!-- 公開後は <a> に置き換える(上のヒーローと同じ) -->
       <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
