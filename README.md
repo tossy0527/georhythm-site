@@ -34,5 +34,5 @@
 - 見た目のトークン(色・フォント)は、アプリ側 `documents/design.md` / `documents/design_handsoff` の値に揃えています。変えるときは `index.html` の `:root` だけを直します。
 - フォントは Google Fonts(Klee One / Shippori Mincho / Material Symbols)を読み込みます。閲覧者のIPアドレスがGoogleに送られるため、気になる場合はフォントのセルフホストを検討してください。
 - `googlead…html` は Google Search Console の所有権確認用ファイルです。削除しないでください。
-- プロジェクトページ(`/georhythm-site/`配下)に置いた `robots.txt` は検索エンジンに無視されます(有効なのはホスト直下のみ)。クロール制御は不要な方針です。
+- `robots.txt` は置いていません。プロジェクトページ(`/georhythm-site/`配下)に置いても検索エンジンに無視される(有効なのはホスト直下のみ)ためで、クロール制御は不要な方針です。
 - 収益化(無料/有料の内訳)には、意図的に触れていません。
