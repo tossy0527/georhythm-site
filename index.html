@@ -367,6 +367,9 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 .btn-copy .ms,.btn-mail .ms{font-size:20px}
 .btn-copy{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
 .btn-copy:hover{background:rgba(95,122,84,.08)}
+/* 「コピーしました」⇔「アドレスをコピー」は、消えてから入れ替わり、ふわっと現れる */
+.btn-copy .ms,#contact-copy-label{transition:opacity .22s ease}
+.btn-copy.is-swapping .ms,.btn-copy.is-swapping #contact-copy-label{opacity:0}
 .btn-copy:focus-visible,.btn-mail:focus-visible,.dlg-close:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px}
 </style>
 </head>
@@ -387,7 +390,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     <div class="hero-copy">
       <p class="eyebrow">勉強・作業時間を、場所で自動記録</p>
       <h1><span>いつもの場所に着いたら、</span><span>しずかに記録がはじまる</span></h1>
-      <p class="hero-lead">カフェや図書館、コワーキングスペース。よく行く場所を登録しておくだけで、着いたら記録がはじまり、離れると終わります。タイマーを押す必要はありません。</p>
+      <p class="hero-lead">カフェや図書館、コワーキングスペース。よく行く場所を登録しておくだけで、着いたら自動で記録がはじまり、離れると終わります。</p>
       <div class="store">
         <!-- 公開後は下の <span> を <a class="btn-store" href="ストアURL">Google Play で入手</a> に置き換える -->
         <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
@@ -635,7 +638,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     <div class="faq reveal">
       <details>
         <summary><span class="q">バッテリー消費はどれくらいありますか?</span><span class="ms">expand_more</span></summary>
-        <p>バッテリー消費はほとんどありません。通常の常時GPS測定と違って、OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知することで、バッテリーへの負担を大幅に抑えています。</p>
+        <p>バッテリー消費はごくわずかです。通常の常時GPS測定と違って、OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知することで、バッテリーへの負担を大幅に抑えています。</p>
       </details>
       <details>
         <summary><span class="q">記録の時刻がずれることはありますか?</span><span class="ms">expand_more</span></summary>
@@ -649,6 +652,10 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
       <details>
         <summary><span class="q">場所を登録していなくても記録できますか?</span><span class="ms">expand_more</span></summary>
         <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることができます。</p>
+      </details>
+      <details>
+        <summary><span class="q">自宅でも使えますか?</span><span class="ms">expand_more</span></summary>
+        <p>自宅は生活の時間と区別できないため、場所を登録しての自動記録には向いていません。ホーム画面から手動で記録をはじめれば、自宅での勉強や作業の時間も計測できます。</p>
       </details>
       <details>
         <summary><span class="q">まちがって記録されたときは?</span><span class="ms">expand_more</span></summary>
@@ -726,18 +733,26 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
   var label = document.getElementById('contact-copy-label');
   var icon = document.getElementById('contact-copy-icon');
   var addr = document.getElementById('contact-addr').textContent.trim();
-  var timer;
+  var timer, swapTimer;
 
+  function setLabel(text, iconName) { label.textContent = text; icon.textContent = iconName; }
+  // 一度フェードアウトしてから文言を入れ替え、フェードインさせる
+  function fadeTo(text, iconName) {
+    clearTimeout(swapTimer);
+    btn.classList.add('is-swapping');
+    swapTimer = setTimeout(function () { setLabel(text, iconName); btn.classList.remove('is-swapping'); }, 220);
+  }
+  // 開閉時は即座に初期状態へ(画面に見えていないのでフェード不要)
   function reset() {
     clearTimeout(timer);
-    label.textContent = 'アドレスをコピー';
-    icon.textContent = 'content_copy';
+    clearTimeout(swapTimer);
+    btn.classList.remove('is-swapping');
+    setLabel('アドレスをコピー', 'content_copy');
   }
   function done(ok) {
-    label.textContent = ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください';
-    icon.textContent = ok ? 'check' : 'content_copy';
+    fadeTo(ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください', ok ? 'check' : 'content_copy');
     clearTimeout(timer);
-    timer = setTimeout(reset, 2600);
+    timer = setTimeout(function () { fadeTo('アドレスをコピー', 'content_copy'); }, 2600);
   }
   // Clipboard API が使えない環境(古いブラウザ・非HTTPS)向け。モーダル中は外の要素を選択できないため、ダイアログ内に一時的に置く
   function legacyCopy() {
