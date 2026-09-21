@@ -3,32 +3,793 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ジオリズム</title>
+<title>ジオリズム — 勉強・作業時間を、場所で自動記録</title>
+<meta name="description" content="カフェや図書館などのいつもの場所を登録しておくだけ。着いたら自動で記録がはじまり、離れると終わります。タイマー操作のいらない、勉強・作業時間の記録アプリ(Android)。">
+<meta name="theme-color" content="#F8F4EA">
+<link rel="canonical" href="https://tossy0527.github.io/georhythm-site/">
+<link rel="icon" type="image/png" href="assets/icon-512.png">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ジオリズム">
+<meta property="og:title" content="ジオリズム — 勉強・作業時間を、場所で自動記録">
+<meta property="og:description" content="いつもの場所に着いたら、しずかに記録がはじまる。タイマー操作のいらない、勉強・作業時間の記録アプリ。">
+<meta property="og:url" content="https://tossy0527.github.io/georhythm-site/">
+<meta property="og:image" content="https://tossy0527.github.io/georhythm-site/assets/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- フォントは Google Fonts(表示用のみ)。読み込めない環境でも下記の代替フォントで表示される -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Shippori+Mincho:wght@500;600&display=swap" rel="stylesheet">
+<!-- アイコンは使う14個だけのサブセット(icon_names はアルファベット順) -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&icon_names=check,chevron_left,chevron_right,close,content_copy,expand_more,history,home,local_cafe,local_library,mail,monitoring,settings,storefront&display=block" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+
 <style>
-  :root { --washi: #F8F4EA; --ink: #3A3E33; --ink-soft: #5B6152; --moss: #5F7A54; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--washi);
-    color: var(--ink);
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-    line-height: 1.9;
-    display: flex;
-    min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 24px;
-  }
-  h1 { font-size: 1.6rem; margin-bottom: 8px; }
-  p { color: var(--ink-soft); margin-bottom: 24px; }
-  a { color: var(--moss); }
+/* ==========================================================================
+   1. トークン(アプリの design.md / design_handsoff と同じ値。色・寸法はここだけで持つ)
+   ========================================================================== */
+:root{
+  color-scheme: light;
+  --color-washi:#F8F4EA;
+  --color-card:rgba(255,253,246,.9);
+  --color-seg-track:#EAE4D3;
+  --color-seg-sel:#FBF8F0;
+  --color-ink-title:#3F4A3A;
+  --color-ink-body:#3A3630;
+  --color-ink-soft:#5B6152;
+  --color-ink-soft-2:#5C564B;
+  --color-sub:#8C8578;
+  --color-faint:#A9A294;
+  --color-chevron:#C4BBA4;
+  --color-line:rgba(58,54,48,.08);
+  --color-line-faint:rgba(58,54,48,.07);
+  --color-footprint:#C9C1AD;
+  --color-empty-dot:#CFC8B8;
+  --color-moss:#5F7A54;
+  --color-moss-ring:oklch(0.62 0.07 150 / .5);
+  --color-moss-deep:oklch(0.48 0.1 155);
+  --color-nav-active:oklch(0.55 0.09 160);
+  --color-lib-text:#4A5058;
+  --color-lib-text-2:#3B4A52;
+  --grad-moss-1:radial-gradient(circle at 42% 38%, oklch(0.82 0.05 140 / .55), oklch(0.72 0.06 150 / .35) 55%, transparent 78%);
+  --grad-moss-2:radial-gradient(circle at 60% 55%, oklch(0.76 0.06 155 / .5), oklch(0.68 0.07 165 / .3) 60%, transparent 80%);
+  --grad-moss-3:radial-gradient(circle at 50% 45%, oklch(0.70 0.07 150 / .45), transparent 75%);
+  --grad-drop:radial-gradient(circle at 38% 35%, oklch(0.78 0.05 148 / .8), oklch(0.70 0.06 156 / .5));
+  --grad-drop-today:radial-gradient(circle at 38% 35%, oklch(0.66 0.08 150 / .95), oklch(0.55 0.09 160 / .7));
+  --color-cafe-tile:oklch(0.90 0.05 150); --color-cafe-ink:oklch(0.42 0.1 155);
+  --color-lib-tile:oklch(0.93 0.035 240); --color-lib-ink:oklch(0.45 0.09 240);
+  --color-kita-tile:oklch(0.95 0.04 85);  --color-kita-ink:oklch(0.5 0.11 85);
+
+  --font-serif:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;
+  --font-sans:'Klee One','Hiragino Sans','Yu Gothic','Noto Sans JP',sans-serif;
+
+  --ease-quint:cubic-bezier(.22,1,.36,1);
+  --page-max:1040px;
+  --gutter:20px;
+}
+
+/* ==========================================================================
+   2. ベース
+   ========================================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--color-washi);
+  color:var(--color-ink-body);
+  font-family:var(--font-sans);
+  font-size:16px;
+  line-height:1.95;
+  line-break:strict;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:var(--color-moss)}
+/* 文字にカーソル(I-beam・キャレット)が出ないようにする。テキストの選択・コピーはそのまま可能 */
+body{cursor:default;caret-color:transparent}
+a,summary{cursor:pointer}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px;border-radius:6px}
+.wrap{max-width:var(--page-max);margin:0 auto;padding-inline:var(--gutter)}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;font-variation-settings:'FILL' 0;
+    display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+
+/* 墨がにじんで像を結ぶ入場(アプリのgbInkと同じ思想)。JSが無い環境では常時表示 */
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+@keyframes ripple{0%{transform:scale(.5);opacity:.4}100%{transform:scale(1.7);opacity:0}}
+.js .reveal{opacity:0;filter:blur(6px);transform:translateY(10px);transition:opacity 1.1s var(--ease-quint),filter 1.1s var(--ease-quint),transform 1.1s var(--ease-quint)}
+.js .reveal.in{opacity:1;filter:blur(0);transform:none}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .js .reveal{opacity:1;filter:none;transform:none}
+}
+
+/* ==========================================================================
+   3. 共通パーツ(見出し・ボタン・ヘッダ/フッタ)
+   ========================================================================== */
+.site-header{padding-block:20px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--color-ink-title);font-family:var(--font-serif);font-weight:600;font-size:1.1rem;letter-spacing:.06em}
+.brand img{width:32px;height:32px;border-radius:9px}
+
+.section{padding-block:clamp(56px,9vw,104px)}
+.eyebrow{font-size:.85rem;letter-spacing:.14em;color:var(--color-ink-soft)}
+.h2{font-family:var(--font-serif);font-weight:600;color:var(--color-ink-title);font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.6;text-wrap:balance}
+.lead{color:var(--color-ink-soft-2);text-wrap:pretty}
+.section-head{text-align:center;max-width:640px;margin:0 auto clamp(32px,5vw,56px)}
+.section-head .eyebrow{margin-bottom:6px}
+.section-head .lead{margin-top:12px;text-wrap:balance}
+
+/* 入手ボタン(準備中)。公開後は <a href="ストアURL"> に置き換える(README参照) */
+.store{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.btn-pending{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:13px 22px;border-radius:999px;
+  background:var(--color-seg-track);color:var(--color-ink-soft);
+  border:1px dashed var(--color-chevron);
+  font-weight:600;font-size:1rem;letter-spacing:.04em;line-height:1.4;
+  cursor:default;user-select:none;
+}
+.btn-pending .tag{
+  padding:1px 10px;border-radius:999px;
+  background:var(--color-seg-sel);color:var(--color-moss-deep);
+  font-size:.78rem;letter-spacing:.08em;
+}
+.store-note{font-size:.85rem;color:var(--color-ink-soft)}
+
+.site-footer{border-top:1px solid var(--color-line);padding-block:36px 48px;color:var(--color-ink-soft);font-size:.88rem}
+.site-footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}
+.site-footer nav{display:flex;flex-wrap:wrap;gap:8px 24px}
+.site-footer a{color:var(--color-ink-soft)}
+
+/* ==========================================================================
+   4. ヒーロー
+   ========================================================================== */
+.hero{position:relative;padding-block:clamp(24px,5vw,56px) clamp(56px,9vw,96px)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,64px);align-items:center}
+.hero-copy .eyebrow{margin-bottom:14px}
+.hero h1{
+  font-family:var(--font-serif);font-weight:600;color:var(--color-ink-title);
+  font-size:clamp(1.55rem,3.7vw,2.4rem);line-height:1.6;letter-spacing:.02em;
+}
+.hero h1 span{display:inline-block}
+.hero-lead{margin:22px 0 30px;color:var(--color-ink-soft-2);max-width:32em;text-wrap:pretty}
+.hero-device{position:relative;display:flex;justify-content:center}
+/* 背後のにじみ(静かに呼吸する) */
+.hero-device::before{
+  content:"";position:absolute;inset:-6% -14%;
+  background:var(--grad-moss-1),var(--grad-moss-2);
+  border-radius:48% 52% 55% 45% / 50% 46% 54% 50%;
+  opacity:.55;filter:blur(24px);animation:breath 9s ease-in-out infinite;
+}
+.hero-device .device{position:relative}
+
+/* ==========================================================================
+   5. スマホ枠 + 画面モック(390×820 で作り、transform: scale で縮小)
+   実際のスクリーンショットは assets/screenshots/ に同名ファイルを置くだけで差し替わる
+   ========================================================================== */
+.device{--w:270px;--z:.6667;width:var(--w);padding:5px;border-radius:38px;background:#34362F;box-shadow:0 24px 60px rgba(40,36,30,.22),0 2px 6px rgba(40,36,30,.12)}
+.device.lg{--w:300px;--z:.7436}
+.device-screen{position:relative;width:100%;aspect-ratio:390/820;border-radius:33px;overflow:hidden;background:var(--color-washi)}
+.device-screen .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;z-index:1}
+.device.has-shot .mock{visibility:hidden}
+.mock{width:390px;height:820px;transform:scale(var(--z));transform-origin:0 0;position:relative;display:flex;flex-direction:column;background:var(--color-washi);color:var(--color-ink-body);font-family:var(--font-sans);line-height:1.5;text-align:left;pointer-events:none;user-select:none}
+.mock *{margin:0}
+
+/* --- 共通:ボトムナビ --- */
+.m-tabbar{margin-top:auto;display:flex;padding:12px 8px 12px;background:var(--color-washi);border-top:1px solid var(--color-line)}
+.m-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.m-tab .ms{font-size:21px;color:var(--color-faint)}
+.m-tab i{width:4px;height:4px;display:block}
+.m-tab.on .ms{color:var(--color-ink-title);font-variation-settings:'FILL' 1}
+.m-tab.on i{border-radius:50%;background:var(--color-nav-active)}
+.m-title{font-family:var(--font-serif);font-size:22px;font-weight:600;color:var(--color-ink-title)}
+
+/* --- ホーム --- */
+.m-home-body{flex:1;display:flex;flex-direction:column;padding:44px 26px 0;min-height:0}
+.m-date{font-size:13.5px;color:var(--color-sub);letter-spacing:.06em}
+.m-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:-24px}
+.m-hero-art{position:relative;width:290px;height:290px;display:flex;align-items:center;justify-content:center}
+.m-bloom{position:absolute;inset:0;animation:breath 6s ease-in-out infinite}
+.m-bloom i{position:absolute;display:block}
+.m-bloom .b1{inset:18px;border-radius:48% 52% 55% 45% / 50% 46% 54% 50%;background:var(--grad-moss-1)}
+.m-bloom .b2{inset:30px;transform:rotate(24deg);border-radius:55% 45% 48% 52% / 46% 54% 50% 50%;background:var(--grad-moss-2)}
+.m-bloom .b3{inset:44px;transform:rotate(-18deg);border-radius:52% 48% 45% 55% / 54% 46% 52% 48%;background:var(--grad-moss-3)}
+.m-ripple{position:absolute;inset:34px;border-radius:50%;border:1px solid var(--color-moss-ring);animation:ripple 7s ease-out infinite}
+.m-readout{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px}
+.m-place{font-size:14px;color:var(--color-ink-soft)}
+.m-count{display:flex;align-items:baseline;font-family:var(--font-serif);font-feature-settings:'tnum';color:var(--color-ink-title);font-weight:600}
+.m-count b{font-size:58px;line-height:1.1;font-weight:600}
+.m-count span{font-size:19px;margin-left:3px}
+.m-since{font-size:12px;color:var(--color-sub)}
+.m-story{margin-top:26px;font-size:13.5px;line-height:2.1;text-align:center;color:var(--color-ink-soft-2)}
+.m-story b{font-family:var(--font-serif);font-weight:600;color:var(--color-ink-title)}
+.m-week{padding-bottom:26px}
+.m-week-row{display:flex;justify-content:center;align-items:flex-end;gap:18px;height:44px}
+.m-day{display:flex;flex-direction:column;align-items:center;gap:7px}
+.m-drop{display:block;border-radius:50%;background:var(--grad-drop)}
+.m-drop.today{background:var(--grad-drop-today);animation:breath 6s ease-in-out infinite}
+.m-drop.empty{background:none;border:1px solid var(--color-empty-dot)}
+.m-drop.empty.future{border-style:dashed}
+.m-day .dow{font-size:12px;color:var(--color-sub)}
+.m-day.is-today .dow{font-weight:600;color:var(--color-ink-soft)}
+
+/* --- レポート(場所の記録帳) --- */
+.m-report-body{flex:1;padding:44px 24px 0;display:flex;flex-direction:column;gap:14px;min-height:0;overflow:hidden}
+.m-seg{display:flex;padding:3px;background:var(--color-seg-track);border-radius:13px}
+.m-seg span{flex:1;text-align:center;padding:7px 0;font-size:13px;color:var(--color-ink-soft);border-radius:10px}
+.m-seg span.sel{background:var(--color-seg-sel);color:var(--color-ink-title);font-weight:600;box-shadow:0 1px 2px rgba(58,54,48,.1)}
+.m-period{display:flex;align-items:center;justify-content:center;gap:14px;font-size:13.5px;color:var(--color-ink-soft)}
+.m-period .ms{font-size:20px;color:var(--color-ink-soft)}
+.m-period .ms.dim{color:var(--color-empty-dot)}
+.m-card{border-radius:20px;padding:12px 16px 4px;box-shadow:0 1px 3px rgba(58,54,48,.04);border:1px solid var(--color-line)}
+.m-card.cafe{background:linear-gradient(180deg,var(--color-cafe-tile),var(--color-card) 70%)}
+.m-card.lib{background:linear-gradient(180deg,var(--color-lib-tile),var(--color-card) 70%)}
+.m-card.kita{background:linear-gradient(180deg,var(--color-kita-tile),var(--color-card) 70%)}
+.m-card-head{display:flex;align-items:center;gap:10px}
+.m-tile{width:34px;height:34px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:48% 52% 50% 50% / 52% 48% 52% 48%;background:rgba(255,253,246,.6)}
+.m-tile .ms{font-size:18px}
+.cafe .m-tile .ms{color:var(--color-cafe-ink)} .lib .m-tile .ms{color:var(--color-lib-ink)} .kita .m-tile .ms{color:var(--color-kita-ink)}
+.m-card-name{flex:1;font-size:14px;font-weight:600;color:var(--color-ink-title)}
+.lib .m-card-name{color:var(--color-lib-text)}
+.m-card-head .chev{font-size:20px;color:var(--color-chevron)}
+.m-time{display:flex;align-items:baseline;margin:6px 0 8px;font-family:var(--font-serif);font-feature-settings:'tnum';color:var(--color-ink-title);font-weight:600}
+.m-time .u{font-size:13px;margin:0 6px 0 2px}
+.m-stats{display:flex;border-top:1px solid var(--color-line-faint);padding:8px 0}
+.m-stats div{flex:1;display:flex;flex-direction:column;gap:0}
+.m-stats small{font-size:12px;color:var(--color-sub)}
+.m-stats b{font-family:var(--font-serif);font-size:15px;font-weight:600;color:var(--color-ink-title)}
+
+/* --- あしあと(履歴) --- */
+.m-hist-body{flex:1;padding:44px 24px 0;min-height:0;overflow:hidden}
+.m-day-head{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 6px}
+.m-day-head span:first-child{font-size:13px;color:var(--color-ink-soft)}
+.m-day-head span:last-child{font-family:var(--font-serif);font-size:13px;font-weight:600;color:var(--color-ink-title)}
+.m-row{display:flex;gap:14px}
+.m-row .ic{width:44px;display:flex;justify-content:center;flex:none;position:relative}
+.m-row .tile{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:48% 52% 50% 50% / 52% 48% 52% 48%}
+.m-row .tile .ms{font-size:20px}
+.m-row .tile.cafe{background:var(--color-cafe-tile)} .m-row .tile.cafe .ms{color:var(--color-cafe-ink)}
+.m-row .tile.lib{background:var(--color-lib-tile)} .m-row .tile.lib .ms{color:var(--color-lib-ink)}
+.m-row .tile.live{animation:breath 6s ease-in-out infinite}
+.m-row .ic .rip{position:absolute;width:52px;height:52px;top:-5px;border-radius:50%;border:1px solid var(--color-moss-ring);animation:ripple 5s ease-out infinite}
+.m-row .txt{flex:1;display:flex;flex-direction:column;padding-top:2px}
+.m-row .place{font-size:14px;font-weight:600;color:var(--color-ink-title)}
+.m-row .place.lib{color:var(--color-lib-text)}
+.m-row .place em{font-style:normal;font-size:12px;font-weight:400;color:var(--color-cafe-ink);margin-left:6px}
+.m-row .when{font-size:12px;color:var(--color-sub);font-feature-settings:'tnum'}
+.m-row .when b{font-family:var(--font-serif);font-weight:600;color:var(--color-ink-title)}
+.m-row .when b.lib{color:var(--color-lib-text-2)}
+.m-path{width:44px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:6px 0}
+.m-path i{display:block;width:5px;height:8px;border-radius:50% 50% 45% 55%;background:var(--color-footprint)}
+.m-path i:nth-child(odd){transform:translateX(-5px) rotate(-14deg)}
+.m-path i:nth-child(even){transform:translateX(5px) rotate(14deg)}
+
+/* ==========================================================================
+   6. 3ステップ
+   ========================================================================== */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step{background:var(--color-card);border:1px solid var(--color-line);border-radius:20px;padding:28px 24px 26px;box-shadow:0 1px 3px rgba(58,54,48,.04)}
+.step-num{width:52px;height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+  font-family:var(--font-serif);font-weight:600;font-size:1.35rem;color:var(--color-ink-title);
+  border-radius:48% 52% 55% 45% / 50% 46% 54% 50%;background:var(--grad-moss-1),var(--grad-moss-2)}
+.step h3{font-family:var(--font-serif);font-weight:600;font-size:1.15rem;color:var(--color-ink-title);margin-bottom:6px}
+.step p{font-size:.95rem;color:var(--color-ink-soft-2);text-wrap:pretty}
+.fit{margin:36px auto 0;max-width:640px}
+.fit .fit-box{text-align:center;text-wrap:balance}
+.fit-box{text-wrap:pretty;padding:20px 24px;border-radius:16px;background:rgba(255,253,246,.55);border:1px solid var(--color-line);font-size:.93rem;color:var(--color-ink-soft-2)}
+.fit-box h3{font-size:.85rem;letter-spacing:.1em;color:var(--color-moss-deep);margin-bottom:4px;font-weight:600}
+
+/* ==========================================================================
+   7. 画面紹介
+   ========================================================================== */
+.screens{background:linear-gradient(180deg,transparent,rgba(234,228,211,.45) 18%,rgba(234,228,211,.45) 82%,transparent)}
+.shots{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;justify-items:center;align-items:start;max-width:720px;margin-inline:auto}
+.shot-fig{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;max-width:300px}
+.shot-fig figcaption strong{display:block;font-family:var(--font-serif);font-weight:600;font-size:1.05rem;color:var(--color-ink-title);margin-bottom:2px}
+.shot-fig figcaption span{font-size:.9rem;color:var(--color-ink-soft-2);display:block;text-wrap:pretty}
+
+/* ==========================================================================
+   8. 安心(位置情報)
+   ========================================================================== */
+.safe-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.safe-col{background:var(--color-card);border:1px solid var(--color-line);border-radius:20px;padding:26px 26px 22px}
+.safe-col h3{font-family:var(--font-serif);font-weight:600;font-size:1.1rem;color:var(--color-ink-title);margin-bottom:12px}
+.safe-col ul{list-style:none}
+.safe-col li{text-wrap:pretty;display:flex;gap:10px;align-items:flex-start;padding-block:6px;font-size:.96rem;color:var(--color-ink-body)}
+.safe-col li .ms{font-size:20px;margin-top:5px;flex:none}
+.safe-col.yes li .ms{color:var(--color-moss-deep)}
+.safe-col.no li .ms{color:var(--color-sub)}
+.safe-col.no{background:rgba(255,253,246,.55)}
+.safe-note{margin-top:22px;text-align:center;font-size:.93rem;color:var(--color-ink-soft-2);text-wrap:pretty}
+
+/* ==========================================================================
+   9. FAQ
+   ========================================================================== */
+.faq{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+/* 1問=1枚のカード。質問は濃く太く、回答は一段やわらかく。開いている間は質問行に淡い苔色を敷く */
+.faq details{background:var(--color-card);border:1px solid rgba(58,54,48,.16);border-radius:16px;overflow:hidden;transition:border-color .3s var(--ease-quint)}
+.faq details[open]{border-color:rgba(95,122,84,.45)}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"Q";flex:none;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(95,122,84,.14);color:var(--color-moss-deep);font-family:var(--font-serif);font-weight:600;font-size:.85rem;line-height:1}
+.faq summary .q{text-wrap:pretty;flex:1;font-weight:600;font-size:1.02rem;line-height:1.7;color:var(--color-ink-title)}
+.faq summary .ms{flex:none;color:var(--color-ink-soft);transition:transform .4s var(--ease-quint)}
+.faq summary:hover{background:rgba(95,122,84,.06)}
+.faq details[open] summary{background:rgba(95,122,84,.09);border-bottom:1px solid var(--color-line)}
+.faq details[open] summary .ms{transform:rotate(180deg)}
+.faq details p{padding:14px 18px 0 58px;color:var(--color-ink-soft-2);font-size:.93rem;line-height:1.95;text-wrap:pretty}
+.faq details p:last-child{padding-bottom:18px}
+
+/* ==========================================================================
+   10. 締め
+   ========================================================================== */
+.closing{text-align:center;padding-block:clamp(48px,8vw,88px) clamp(64px,10vw,110px)}
+.closing .store{align-items:center;margin-top:26px}
+
+/* ==========================================================================
+   11. レスポンシブ
+   ========================================================================== */
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr;text-align:center}
+  .hero-lead{margin-inline:auto}
+  .store{align-items:center}
+  .hero-device{margin-top:24px}
+  .steps,.shots,.safe-grid,.fit{grid-template-columns:1fr}
+  .steps{max-width:520px;margin-inline:auto}
+  .fit,.safe-grid{max-width:560px;margin-inline:auto}
+  .shots{gap:48px}
+}
+@media (max-width:420px){
+  .btn-pending{padding:12px 18px;font-size:.95rem}
+  .faq summary{padding:14px 14px;gap:12px}
+  .faq details p{padding-left:52px;padding-right:14px}
+}
+
+/* ==========================================================================
+   12. お問い合わせダイアログ
+   ========================================================================== */
+dialog{margin:auto;border:none;padding:0;width:min(92vw,460px);border-radius:22px;background:var(--color-washi);color:var(--color-ink-body);box-shadow:0 24px 70px rgba(40,36,30,.28)}
+dialog::backdrop{background:rgba(58,54,48,.42)}
+.dlg{position:relative;padding:30px 26px 26px}
+.dlg-close{position:absolute;top:10px;right:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;background:none;color:var(--color-ink-soft);cursor:pointer}
+.dlg-close:hover{background:rgba(95,122,84,.1)}
+.dlg-close .ms{font-size:22px}
+.dlg-title{font-family:var(--font-serif);font-weight:600;font-size:1.25rem;color:var(--color-ink-title);margin-bottom:8px}
+.dlg-text{font-size:.93rem;color:var(--color-ink-soft-2);text-wrap:pretty}
+.dlg-to{margin:16px 2px 6px;font-size:.82rem;line-height:1.6;color:var(--color-ink-soft)}
+.dlg-addr{margin:0 0 20px;padding:14px 10px;border-radius:14px;background:var(--color-card);border:1px solid rgba(58,54,48,.16);text-align:center;font-size:clamp(.8rem,3.7vw,.98rem);letter-spacing:0;line-height:1.6;overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.dlg-actions{display:flex;flex-direction:column;gap:10px}
+.btn-copy,.btn-mail{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:999px;font-family:inherit;font-size:.95rem;font-weight:600;letter-spacing:.03em;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* 主ボタン=メールアプリで開く(緑)/ 副ボタン=アドレスをコピー(枠のみ) */
+.btn-mail{border:1px solid var(--color-moss-deep);background:var(--color-moss-deep);color:var(--color-seg-sel)}
+.btn-mail:hover{filter:brightness(1.08)}
+.btn-copy .ms,.btn-mail .ms{font-size:20px}
+.btn-copy{border:1px solid rgba(58,54,48,.22);background:none;color:var(--color-ink-soft)}
+.btn-copy:hover{background:rgba(95,122,84,.08)}
+/* 「アドレスをコピー」と「コピーしました」を同じ位置に重ね、不透明度だけを入れ替える(クロスフェード)。
+   コピー直後はほぼ一瞬(.06s)、元に戻るときはゆっくり(.4s)。移行先の状態の transition が使われる */
+.btn-copy .stack{display:grid;justify-items:center}
+.btn-copy .layer{grid-area:1/1;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .4s ease}
+.btn-copy .layer.done{opacity:0}
+.btn-copy.is-copied .layer.idle{opacity:0}
+.btn-copy.is-copied .layer.done{opacity:1}
+.btn-copy.is-copied .layer{transition-duration:.06s}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.btn-copy:focus-visible,.btn-mail:focus-visible,.dlg-close:focus-visible{outline:2px solid var(--color-moss);outline-offset:3px}
 </style>
 </head>
+
 <body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./index.html"><img src="assets/icon-512.png" alt="" width="32" height="32">ジオリズム</a>
+  </div>
+</header>
+
 <main>
-  <h1>ジオリズム</h1>
-  <p>いつもの場所に着いたら、しずかに記録がはじまる<br>勉強/作業時間トラッカー(準備中)</p>
-  <p><a href="./privacy.html">プライバシーポリシー</a></p>
+
+<!-- ============================ ヒーロー ============================ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">勉強・作業時間を、場所で自動記録</p>
+      <h1><span>いつもの場所に着いたら、</span><span>しずかに記録がはじまる</span></h1>
+      <p class="hero-lead">カフェや図書館、コワーキングスペース。よく行く場所を登録しておくだけで、着いたら自動で記録がはじまり、離れると終わります。</p>
+      <div class="store">
+        <!-- 公開後は下の <span> を <a class="btn-store" href="ストアURL">Google Play で入手</a> に置き換える -->
+        <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
+        <p class="store-note">現在は Android のみに対応しています。</p>
+      </div>
+    </div>
+
+    <div class="hero-device">
+      <figure class="device lg">
+        <div class="device-screen">
+          <!-- スクショ差し替え: assets/screenshots/home.png を置くと、自動でこのモックの代わりに表示される -->
+          <img class="shot" src="assets/screenshots/home.png" alt="ジオリズムのホーム画面" onload="this.closest('.device').classList.add('has-shot')" onerror="this.remove()">
+          <div class="mock" aria-hidden="true">
+            <div class="m-home-body">
+              <div class="m-date">九月十九日(土)</div>
+              <div class="m-hero">
+                <div class="m-hero-art">
+                  <div class="m-bloom"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+                  <div class="m-ripple"></div>
+                  <div class="m-readout">
+                    <div class="m-place">駅前のカフェで</div>
+                    <div class="m-count"><b>42</b><span>分</span></div>
+                    <div class="m-since">8:48から、静かに</div>
+                  </div>
+                </div>
+                <p class="m-story">きょうは これで <b>1時間48分</b>。</p>
+              </div>
+              <div class="m-week">
+                <div class="m-week-row">
+                  <div class="m-day"><span class="m-drop" style="width:13px;height:13px"></span><span class="dow">月</span></div>
+                  <div class="m-day"><span class="m-drop" style="width:19px;height:19px"></span><span class="dow">火</span></div>
+                  <div class="m-day"><span class="m-drop empty" style="width:6px;height:6px"></span><span class="dow">水</span></div>
+                  <div class="m-day"><span class="m-drop" style="width:17px;height:17px"></span><span class="dow">木</span></div>
+                  <div class="m-day"><span class="m-drop" style="width:15px;height:15px"></span><span class="dow">金</span></div>
+                  <div class="m-day is-today"><span class="m-drop today" style="width:24px;height:24px"></span><span class="dow">土</span></div>
+                  <div class="m-day"><span class="m-drop empty future" style="width:6px;height:6px"></span><span class="dow">日</span></div>
+                </div>
+              </div>
+            </div>
+            <nav class="m-tabbar">
+              <div class="m-tab on"><span class="ms">home</span><i></i></div>
+              <div class="m-tab"><span class="ms">monitoring</span><i></i></div>
+              <div class="m-tab"><span class="ms">history</span><i></i></div>
+              <div class="m-tab"><span class="ms">settings</span><i></i></div>
+            </nav>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 3ステップ ============================ -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">はじめかた</p>
+      <h2 class="h2">一度設定したら、あとは放置</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <h3>場所を登録する</h3>
+        <p>カフェや図書館など、よく行く場所を地図や検索から選んで登録します。最初にするのはこれだけです。</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <h3>あとは放置</h3>
+        <p>登録した場所に着くと記録がはじまり、離れると終わります。記録のためにアプリを開く必要はありません。</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <h3>積み上げをふりかえる</h3>
+        <p>場所ごとの合計時間や、1日ごとのあしあとを、あとからゆっくり眺められます。</p>
+      </div>
+    </div>
+
+    <div class="fit reveal">
+      <div class="fit-box">
+        <h3>こんな方に</h3>
+        カフェや図書館に通って、勉強や仕事をする方。手動での記録が続けられなかった方。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 画面紹介 ============================ -->
+<section class="section screens" id="screens">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">画面のようす</p>
+      <h2 class="h2">数字を煽らない、静かな画面</h2>
+      <p class="lead">目標もランキングもありません。ただ、積み上がっていく時間が見えるだけです。</p>
+    </div>
+
+    <div class="shots">
+
+      <!-- レポート -->
+      <figure class="shot-fig reveal">
+        <div class="device">
+          <div class="device-screen">
+            <!-- スクショ差し替え: assets/screenshots/report.png -->
+            <img class="shot" src="assets/screenshots/report.png" alt="ジオリズムのレポート画面" loading="lazy" onload="this.closest('.device').classList.add('has-shot')" onerror="this.remove()">
+            <div class="mock" aria-hidden="true">
+              <div class="m-report-body">
+                <div class="m-title">レポート</div>
+                <div class="m-seg"><span class="sel">月</span><span>全期間</span></div>
+                <div class="m-period"><span class="ms">chevron_left</span>2026年 9月<span class="ms dim">chevron_right</span></div>
+
+                <div class="m-card cafe">
+                  <div class="m-card-head"><span class="m-tile"><span class="ms">local_cafe</span></span><span class="m-card-name">駅前のカフェ</span><span class="ms chev">chevron_right</span></div>
+                  <div class="m-time"><span style="font-size:32px">18</span><span class="u">時間</span><span style="font-size:32px">50</span><span class="u">分</span></div>
+                  <div class="m-stats"><div><small>回数</small><b>12回</b></div><div><small>一回の平均</small><b>1時間34分</b></div></div>
+                </div>
+
+                <div class="m-card lib">
+                  <div class="m-card-head"><span class="m-tile"><span class="ms">local_library</span></span><span class="m-card-name">市立図書館</span><span class="ms chev">chevron_right</span></div>
+                  <div class="m-time"><span style="font-size:26px">9</span><span class="u">時間</span><span style="font-size:26px">20</span><span class="u">分</span></div>
+                  <div class="m-stats"><div><small>回数</small><b>8回</b></div><div><small>一回の平均</small><b>1時間10分</b></div></div>
+                </div>
+
+                <div class="m-card kita">
+                  <div class="m-card-head"><span class="m-tile"><span class="ms">storefront</span></span><span class="m-card-name">北口のコワーキング</span><span class="ms chev">chevron_right</span></div>
+                  <div class="m-time"><span style="font-size:20px">4</span><span class="u">時間</span><span style="font-size:20px">5</span><span class="u">分</span></div>
+                  <div class="m-stats"><div><small>回数</small><b>5回</b></div><div><small>一回の平均</small><b>49分</b></div></div>
+                </div>
+              </div>
+              <nav class="m-tabbar">
+                <div class="m-tab"><span class="ms">home</span><i></i></div>
+                <div class="m-tab on"><span class="ms">monitoring</span><i></i></div>
+                <div class="m-tab"><span class="ms">history</span><i></i></div>
+                <div class="m-tab"><span class="ms">settings</span><i></i></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <figcaption><strong>レポート</strong><span>場所ごとの積み上げ。カードをタップすることでより詳細な情報も確認できます。</span></figcaption>
+      </figure>
+
+      <!-- あしあと -->
+      <figure class="shot-fig reveal">
+        <div class="device">
+          <div class="device-screen">
+            <!-- スクショ差し替え: assets/screenshots/history.png -->
+            <img class="shot" src="assets/screenshots/history.png" alt="ジオリズムのあしあと(履歴)画面" loading="lazy" onload="this.closest('.device').classList.add('has-shot')" onerror="this.remove()">
+            <div class="mock" aria-hidden="true">
+              <div class="m-hist-body">
+                <div class="m-title">あしあと</div>
+
+                <div class="m-day-head"><span>きょう · 九月十九日(土)</span><span>1時間48分</span></div>
+                <div class="m-row">
+                  <div class="ic"><span class="tile lib"><span class="ms">local_library</span></span></div>
+                  <div class="txt"><span class="place lib">市立図書館</span><span class="when">7:30 → 8:36 · <b class="lib">1時間6分</b></span></div>
+                </div>
+                <div class="m-path"><i></i><i></i></div>
+                <div class="m-row">
+                  <div class="ic"><span class="rip"></span><span class="tile cafe live"><span class="ms">local_cafe</span></span></div>
+                  <div class="txt"><span class="place">駅前のカフェ<em>計測中</em></span><span class="when">8:48 → いま · <b>42分</b></span></div>
+                </div>
+
+                <!-- 日をまたぐ足あとは3つ(アプリと同じ) -->
+                <div class="m-path"><i></i><i></i><i></i></div>
+                <div class="m-day-head" style="margin-top:0"><span>きのう · 九月十八日(金)</span><span>1時間0分</span></div>
+                <div class="m-row">
+                  <div class="ic"><span class="tile cafe"><span class="ms">local_cafe</span></span></div>
+                  <div class="txt"><span class="place">駅前のカフェ</span><span class="when">19:12 → 20:12 · <b>1時間0分</b></span></div>
+                </div>
+
+                <div class="m-path"><i></i><i></i><i></i></div>
+                <div class="m-day-head" style="margin-top:0"><span>九月十七日(木)</span><span>1時間30分</span></div>
+                <div class="m-row">
+                  <div class="ic"><span class="tile lib"><span class="ms">local_library</span></span></div>
+                  <div class="txt"><span class="place lib">市立図書館</span><span class="when">18:40 → 20:10 · <b class="lib">1時間30分</b></span></div>
+                </div>
+
+                <div class="m-path"><i></i><i></i><i></i></div>
+                <div class="m-day-head" style="margin-top:0"><span>九月十六日(水)</span><span>2時間5分</span></div>
+                <div class="m-row">
+                  <div class="ic"><span class="tile cafe"><span class="ms">local_cafe</span></span></div>
+                  <div class="txt"><span class="place">駅前のカフェ</span><span class="when">9:20 → 11:25 · <b>2時間5分</b></span></div>
+                </div>
+
+                <div class="m-path"><i></i><i></i><i></i></div>
+                <div class="m-day-head" style="margin-top:0"><span>九月十四日(月)</span><span>1時間15分</span></div>
+                <div class="m-row">
+                  <div class="ic"><span class="tile lib"><span class="ms">local_library</span></span></div>
+                  <div class="txt"><span class="place lib">市立図書館</span><span class="when">19:00 → 20:15 · <b class="lib">1時間15分</b></span></div>
+                </div>
+              </div>
+              <nav class="m-tabbar">
+                <div class="m-tab"><span class="ms">home</span><i></i></div>
+                <div class="m-tab"><span class="ms">monitoring</span><i></i></div>
+                <div class="m-tab on"><span class="ms">history</span><i></i></div>
+                <div class="m-tab"><span class="ms">settings</span><i></i></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+        <figcaption><strong>あしあと</strong><span>1日の歩みを、足あとでたどれます。まちがった記録は、あとから編集・削除できます。</span></figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 安心(位置情報) ============================ -->
+<section class="section" id="privacy-safe">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">位置情報について</p>
+      <h2 class="h2">プライバシーへの配慮としくみ</h2>
+      <p class="lead">位置情報を使うアプリだからこそ、何を記録して、何を記録しないかを、はっきりさせています。</p>
+    </div>
+
+    <div class="safe-grid">
+      <div class="safe-col yes reveal">
+        <h3>記録するもの</h3>
+        <ul>
+          <li><span class="ms">check</span>あなたが登録した場所の名前と座標</li>
+          <li><span class="ms">check</span>その場所に着いた時刻と、離れた時刻</li>
+        </ul>
+      </div>
+      <div class="safe-col no reveal">
+        <h3>記録しないもの</h3>
+        <ul>
+          <li><span class="ms">close</span>移動の経路</li>
+          <li><span class="ms">close</span>登録した場所以外での位置</li>
+          <li><span class="ms">close</span>常時のGPS測定(場所への出入りのみを検知しています)</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="safe-note reveal">アプリを閉じている間も記録するため、位置情報の「常に許可」をお願いしています。<br>詳しくは<a href="./privacy.html">プライバシーポリシー</a>をご覧ください。</p>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section class="section" id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 class="h2">よくある質問</h2>
+    </div>
+
+    <div class="faq reveal">
+      <details>
+        <summary><span class="q">バッテリー消費はどれくらいありますか?</span><span class="ms">expand_more</span></summary>
+        <p>バッテリー消費はごくわずかです。通常の常時GPS測定と違って、OSのジオフェンス機能で「登録した場所に入った・出た」ことだけを検知することで、バッテリーへの負担を大幅に抑えています。</p>
+      </details>
+      <details>
+        <summary><span class="q">記録の時刻がずれることはありますか?</span><span class="ms">expand_more</span></summary>
+        <p>場所への出入りの検知には、数分ほどの遅れが出ることがあります。ジオリズムは積み上げを手間なく・おおまかに把握するためのアプリなので、この遅れは補正していません。</p>
+        <p>細かい時間の修正は、「あしあと」画面から行うことができます。</p>
+      </details>
+      <details>
+        <summary><span class="q">登録した場所の近くを通るだけでも記録されてしまうのでしょうか?</span><span class="ms">expand_more</span></summary>
+        <p>初期設定では、15分に満たない滞在は記録しません。この時間は設定から変更できます。</p>
+      </details>
+      <details>
+        <summary><span class="q">場所を登録していなくても記録できますか?</span><span class="ms">expand_more</span></summary>
+        <p>ホーム画面から、登録されていない場所でも手動で記録をはじめることができます。</p>
+      </details>
+      <details>
+        <summary><span class="q">自宅でも使えますか?</span><span class="ms">expand_more</span></summary>
+        <p>自宅は生活の時間と区別できないため、場所を登録しての自動記録には向いていません。ホーム画面から手動で記録をはじめれば、自宅での勉強や作業の時間も計測できます。</p>
+      </details>
+      <details>
+        <summary><span class="q">まちがって記録されたときは?</span><span class="ms">expand_more</span></summary>
+        <p>「あしあと」画面から、記録の編集や削除ができます。</p>
+      </details>
+      <details>
+        <summary><span class="q">iPhoneでも使えますか?</span><span class="ms">expand_more</span></summary>
+        <p>現在は Android のみに対応しています。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 締め ============================ -->
+<section class="closing">
+  <div class="wrap reveal">
+    <h2 class="h2">まもなく公開予定</h2>
+    <div class="store">
+      <!-- 公開後は <a> に置き換える(上のヒーローと同じ) -->
+      <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
+      <p class="store-note">現在は Android のみに対応しています。</p>
+    </div>
+  </div>
+</section>
+
 </main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© 2026 開発室Unagi</span>
+    <nav>
+      <a href="./privacy.html">プライバシーポリシー</a>
+      <a href="mailto:unagi.laboratory+georhythm@gmail.com?subject=%E3%82%B8%E3%82%AA%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" id="contact-link">お問い合わせ</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- お問い合わせ:メールアプリをいきなり開かず、アドレスの表示とコピーを先に出す。JSが無効な環境では上のリンクがそのまま mailto として動く -->
+<dialog id="contact" aria-labelledby="contact-title">
+  <div class="dlg">
+    <button type="button" class="dlg-close" id="contact-close" aria-label="閉じる"><span class="ms">close</span></button>
+    <h2 class="dlg-title" id="contact-title">お問い合わせ</h2>
+    <p class="dlg-text">ご質問・ご要望・不具合のご連絡は、次のメールアドレスまでお願いします。</p>
+    <p class="dlg-to">宛先:開発室Unagi</p>
+    <p class="dlg-addr" id="contact-addr">unagi.laboratory+georhythm@gmail.com</p>
+    <div class="dlg-actions">
+      <a class="btn-mail" href="mailto:unagi.laboratory+georhythm@gmail.com?subject=%E3%82%B8%E3%82%AA%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" autofocus><span class="ms">mail</span>メールアプリで開く</a>
+      <button type="button" class="btn-copy" id="contact-copy">
+        <span class="stack">
+          <span class="layer idle"><span class="ms">content_copy</span><span>アドレスをコピー</span></span>
+          <span class="layer done" aria-hidden="true"><span class="ms" id="contact-copy-icon">check</span><span id="contact-copy-label">コピーしました</span></span>
+        </span>
+      </button>
+      <span class="sr-only" id="contact-copy-status" role="status" aria-live="polite"></span>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// スクロールで、墨がにじむように現れる。IntersectionObserver が無い環境ではすぐ表示する
+(function () {
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  els.forEach(function (el) { io.observe(el); });
+})();
+</script>
+<script>
+// お問い合わせ:ダイアログでアドレスを見せ、コピーできるようにする。<dialog> 非対応の環境では通常の mailto のまま
+(function () {
+  var link = document.getElementById('contact-link');
+  var dlg = document.getElementById('contact');
+  if (!link || !dlg || typeof dlg.showModal !== 'function') return;
+  var btn = document.getElementById('contact-copy');
+  var doneIcon = document.getElementById('contact-copy-icon');
+  var doneLabel = document.getElementById('contact-copy-label');
+  var status = document.getElementById('contact-copy-status');
+  var addr = document.getElementById('contact-addr').textContent.trim();
+  var timer;
+
+  // 見た目は CSS のクロスフェード(.is-copied の付け外し)。読み上げは別の status 領域で行う
+  function reset() {
+    clearTimeout(timer);
+    btn.classList.remove('is-copied');
+    status.textContent = '';
+  }
+  function done(ok) {
+    doneLabel.textContent = ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください';
+    doneIcon.textContent = ok ? 'check' : 'content_copy';
+    status.textContent = doneLabel.textContent;
+    btn.classList.add('is-copied');
+    clearTimeout(timer);
+    timer = setTimeout(reset, 2600);
+  }
+  // Clipboard API が使えない環境(古いブラウザ・非HTTPS)向け。モーダル中は外の要素を選択できないため、ダイアログ内に一時的に置く
+  function legacyCopy() {
+    var ta = document.createElement('textarea');
+    ta.value = addr;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:absolute;opacity:0;pointer-events:none';
+    dlg.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    dlg.removeChild(ta);
+    return ok;
+  }
+
+  link.addEventListener('click', function (e) { e.preventDefault(); reset(); dlg.showModal(); });
+  document.getElementById('contact-close').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); }); // 枠の外(背景)をクリックしても閉じる
+  dlg.addEventListener('close', reset);
+  btn.addEventListener('click', function () {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(addr).then(function () { done(true); }, function () { done(legacyCopy()); });
+    } else {
+      done(legacyCopy());
+    }
+  });
+})();
+</script>
 </body>
 </html>
