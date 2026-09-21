@@ -25,6 +25,10 @@
 
 `index.html` の「Google Play で入手 / 準備中」(ヒーローと最後の2か所。`btn-pending` を検索)を、ストアのリンクに置き換えます。Google Play のバッジ画像を使う場合は、公式のバッジ素材とガイドラインに従うこと。
 
+## お問い合わせ
+
+フッターの「お問い合わせ」は、押すとダイアログでアドレスを表示し、「アドレスをコピー」「メールアプリで開く」を選べます(JSが使えない環境では通常の `mailto:` リンクとして動きます)。宛先は自動返信フィルタ用の `unagi.laboratory+georhythm@gmail.com`。変更するときは `index.html`(フッターのリンク・ダイアログ内の表示とリンクの3か所)と `privacy.html`(8. お問い合わせ)、アプリ側原本 `documents/privacy_policy.md` をそろえて直すこと。
+
 ## 注意
 
 - 見た目のトークン(色・フォント)は、アプリ側 `documents/design.md` / `documents/design_handsoff` の値に揃えています。変えるときは `index.html` の `:root` だけを直します。
