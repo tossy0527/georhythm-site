@@ -127,7 +127,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .lead{color:var(--color-ink-soft-2);text-wrap:pretty}
 .section-head{text-align:center;max-width:640px;margin:0 auto clamp(32px,5vw,56px)}
 .section-head .eyebrow{margin-bottom:6px}
-.section-head .lead{margin-top:12px;text-wrap:balance}
+.section-head .lead{margin-top:12px;text-wrap:balance;word-break:auto-phrase}
 
 /* 入手ボタン(準備中)。公開後は <a href="ストアURL"> に置き換える(README参照) */
 .store{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
@@ -327,7 +327,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 /* ==========================================================================
    8. 安心(位置情報)
    ========================================================================== */
-.safe-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.safe-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;margin-inline:auto}
 .safe-col{background:var(--color-card);border:1px solid var(--color-line);border-radius:20px;padding:26px 26px 22px}
 .safe-col h3{font-family:var(--font-serif);font-weight:600;font-size:1.1rem;color:var(--color-ink-title);margin-bottom:12px}
 .safe-col ul{list-style:none}
