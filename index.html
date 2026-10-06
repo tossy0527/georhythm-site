@@ -154,7 +154,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 /* ==========================================================================
    4. ヒーロー
    ========================================================================== */
-.hero{position:relative;padding-block:clamp(24px,5vw,56px) clamp(56px,9vw,96px)}
+/* 背後のにじみ(.hero-device::before)は左右へはみ出して描くため、ヒーローの外へは出さない(iOS Safari は body の overflow-x を無視して横にずれることがある) */
+.hero{position:relative;padding-block:clamp(24px,5vw,56px) clamp(56px,9vw,96px);overflow-x:clip}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,64px);align-items:center}
 .hero-copy .eyebrow{margin-bottom:14px}
 .hero h1{
