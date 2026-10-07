@@ -129,21 +129,16 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .section-head .eyebrow{margin-bottom:6px}
 .section-head .lead{margin-top:12px;text-wrap:balance;word-break:auto-phrase}
 
-/* 入手ボタン(準備中)。公開後は <a href="ストアURL"> に置き換える(README参照) */
+/* 入手ボタン。リンク先はGoogle Playのストアページ(ヒーローと最後の2か所) */
 .store{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-.btn-pending{
-  display:inline-flex;align-items:center;gap:12px;
-  padding:13px 22px;border-radius:999px;
-  background:var(--color-seg-track);color:var(--color-ink-soft);
-  border:1px dashed var(--color-chevron);
+.btn-store{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:48px;padding:13px 26px;border-radius:999px;
+  border:1px solid var(--color-moss-deep);background:var(--color-moss-deep);color:var(--color-seg-sel);
   font-weight:600;font-size:1rem;letter-spacing:.04em;line-height:1.4;
-  cursor:default;user-select:none;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
 }
-.btn-pending .tag{
-  padding:1px 10px;border-radius:999px;
-  background:var(--color-seg-sel);color:var(--color-moss-deep);
-  font-size:.78rem;letter-spacing:.08em;
-}
+.btn-store:hover{filter:brightness(1.08)}
 .store-note{font-size:.85rem;color:var(--color-ink-soft)}
 
 .site-footer{border-top:1px solid var(--color-line);padding-block:36px 48px;color:var(--color-ink-soft);font-size:.88rem}
@@ -376,7 +371,7 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
   .shots{gap:48px}
 }
 @media (max-width:420px){
-  .btn-pending{padding:12px 18px;font-size:.95rem}
+  .btn-store{padding:12px 22px;font-size:.95rem}
   .faq summary{padding:14px 14px;gap:12px}
   .faq details p{padding-left:52px;padding-right:14px}
 }
@@ -433,8 +428,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
       <h1><span>いつもの場所に着くだけで、</span><span>記録が始まる</span></h1>
       <p class="hero-lead">カフェや図書館、コワーキングスペースなど、よく行く場所を登録しておくことで、その場所での滞在を自動で記録するアプリです。</p>
       <div class="store">
-        <!-- 公開後は下の <span> を <a class="btn-store" href="ストアURL">Google Play で入手</a> に置き換える -->
-        <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
+        <a class="btn-store" href="https://play.google.com/store/apps/details?id=io.github.tossy0527.georhythm">Google Play で入手</a>
         <p class="store-note">現在はAndroidのみに対応しています。</p>
       </div>
     </div>
@@ -759,10 +753,9 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 <!-- ============================ 締め ============================ -->
 <section class="closing">
   <div class="wrap reveal">
-    <h2 class="h2">まもなく公開予定</h2>
+    <h2 class="h2">Google Play で配信中</h2>
     <div class="store">
-      <!-- 公開後は <a> に置き換える(上のヒーローと同じ) -->
-      <span class="btn-pending" aria-disabled="true">Google Play で入手<span class="tag">準備中</span></span>
+      <a class="btn-store" href="https://play.google.com/store/apps/details?id=io.github.tossy0527.georhythm">Google Play で入手</a>
       <p class="store-note">現在はAndroidのみに対応しています。</p>
     </div>
   </div>
