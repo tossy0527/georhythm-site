@@ -30,6 +30,10 @@
 
 フッターの「お問い合わせ」は、押すとダイアログでアドレスを表示し、「アドレスをコピー」「メールアプリで開く」を選べます(JSが使えない環境では通常の `mailto:` リンクとして動きます)。宛先は自動返信フィルタ用の `unagi.laboratory+georhythm@gmail.com`。変更するときは `index.html`(フッターのリンク・ダイアログ内の表示とリンクの3か所)と `privacy.html`(8. お問い合わせ)、アプリ側原本 `documents/privacy_policy.md` をそろえて直すこと。
 
+## イラストのクレジット
+
+フッターの「Google Play の掲載画像のイラスト:Loose Drawing」は、Google Play のフィーチャーグラフィック・スクリーンショットに使ったフリー素材([Loose Drawing](https://loosedrawing.com/))へのお礼です。このサイトとアプリ本体ではイラストを使っていません。Loose Drawing の規約ではクレジット表記は不要で、「リンクを貼って紹介してもらえると嬉しい」とあるため、リンク付きで載せています(2026-10-10)。ストアの掲載画像からイラストを外した場合は、この表記も外すこと。
+
 ## 注意
 
 - 見た目のトークン(色・フォント)は、アプリ側 `documents/design.md` / `documents/design_handsoff` の値に揃えています。変えるときは `index.html` の `:root` だけを直します。

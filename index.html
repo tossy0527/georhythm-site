@@ -145,6 +145,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid var(--color-moss);outlin
 .site-footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}
 .site-footer nav{display:flex;flex-wrap:wrap;gap:8px 24px}
 .site-footer a{color:var(--color-ink-soft)}
+.site-footer .foot-meta{display:flex;flex-direction:column;gap:4px}
+.site-footer .credit{font-size:.8rem}
 
 /* ==========================================================================
    4. ヒーロー
@@ -765,7 +767,11 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
 
 <footer class="site-footer">
   <div class="wrap">
-    <span>© 2026 開発室Unagi</span>
+    <div class="foot-meta">
+      <span>© 2026 開発室Unagi</span>
+      <!-- Google Play の掲載画像(フィーチャーグラフィック・スクリーンショット)に使ったイラストの出どころ。表記は規約上不要だが、お礼として載せる -->
+      <span class="credit">Google Play の掲載画像のイラスト:<a href="https://loosedrawing.com/">Loose Drawing</a></span>
+    </div>
     <nav>
       <a href="./privacy.html">プライバシーポリシー</a>
       <a href="./tokushoho.html">特定商取引法に基づく表記</a>
