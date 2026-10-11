@@ -700,7 +700,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
         <ul>
           <li>カフェや図書館に通って勉強や仕事をする方</li>
           <li>作業場所ごとの稼働時間をざっくり把握したいフリーランス・在宅ワーカーの方</li>
-          <li>手動での記録が続けられなかった方</li>
+          <li>記録を自分でつけるのが続かなかった方</li>
         </ul>
       </div>
     </div>
@@ -837,7 +837,7 @@ dialog::backdrop{background:rgba(58,54,48,.42)}
     status.textContent = '';
   }
   function done(ok) {
-    doneLabel.textContent = ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください';
+    doneLabel.textContent = ok ? 'コピーしました' : 'コピーできませんでした。上のアドレスを選択してください。';
     doneIcon.textContent = ok ? 'check' : 'content_copy';
     status.textContent = doneLabel.textContent;
     btn.classList.add('is-copied');
