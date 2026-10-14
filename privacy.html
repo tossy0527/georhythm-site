@@ -26,7 +26,7 @@
   h2 { font-size: 1.1rem; color: var(--moss); margin: 36px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
   h3 { font-size: 1rem; color: var(--ink); margin: 24px 0 8px; }
   p, li { color: var(--ink); margin-bottom: 10px; }
-  ul { padding-left: 1.4em; margin-bottom: 10px; }
+  ul, ol { padding-left: 1.4em; margin-bottom: 10px; }
   strong { color: var(--ink); }
   .lead { color: var(--ink-soft); }
   .table-wrap { overflow-x: auto; margin: 12px 0; }
@@ -46,6 +46,7 @@
 <body>
 <nav class="crumb" aria-label="パンくずリスト"><a href="./index.html">ジオリズム</a><span aria-hidden="true">›</span><span aria-current="page">プライバシーポリシー</span></nav>
 <main>
+  <!-- <main>の中身は scripts/build_policies.py で原本(privacy_policy.md)から生成している。手で直さない -->
   <h1>ジオリズム プライバシーポリシー</h1>
   <p class="date">制定日: 2026年7月18日<br>最終改定日: 2026年10月11日</p>
 
@@ -97,14 +98,14 @@
 
   <h2>2. 利用目的</h2>
   <p>取得した情報は、次の目的にのみ利用します。</p>
-  <ul>
+  <ol>
     <li>滞在の自動記録と、グラフ・履歴としての表示</li>
     <li>複数端末・機種変更時の記録の同期と引き継ぎ</li>
     <li>記録の開始・完了の通知(設定でオンにした場合のみ)と、終了時間が不明な記録があるときのお知らせの表示(いずれも端末内で完結するローカル通知です)</li>
     <li>ジオリズム サポーター版の購入の確認と、機種変更・再インストール時の購入の復元</li>
     <li>不具合の調査とアプリの品質改善</li>
     <li>お問い合わせへの返信</li>
-  </ul>
+  </ol>
 
   <h2>3. 外部サービスへの委託</h2>
   <p>本アプリは、次の外部サービスを利用しています。各サービスにおける情報の取り扱いは、それぞれのプライバシーポリシー(<a href="https://policies.google.com/privacy" rel="noopener">Google</a>・<a href="https://www.revenuecat.com/privacy/" rel="noopener">RevenueCat</a>)に従います。</p>
@@ -156,7 +157,7 @@
   <p>本ポリシーに関するお問い合わせは、次の連絡先までお願いします。</p>
   <ul>
     <li>宛先: 開発室Unagi</li>
-    <li>連絡先: unagi.laboratory+georhythm@gmail.com</li>
+    <li>連絡先: <a href="mailto:unagi.laboratory+georhythm@gmail.com">unagi.laboratory+georhythm@gmail.com</a></li>
   </ul>
 </main>
 <footer>
