@@ -1,6 +1,6 @@
-# georhythm-site
+# comolog-site
 
-「ジオリズム」のアプリ紹介ページ(GitHub Pages)。ビルド工程のない静的HTML/CSSです。
+「Comolog」のアプリ紹介ページ(GitHub Pages)。ビルド工程のない静的HTML/CSSです。
 
 - `index.html` — アプリ紹介(1ページ完結。CSS・JSはすべてこのファイルに内蔵)
 - `privacy.html` — プライバシーポリシー(`<main>`の中身は原本から生成。下記「ポリシーのページを更新する」)
@@ -58,5 +58,5 @@ python3 scripts/build_policies.py --check               # 書き換えずに、�
 - 見た目のトークン(色・フォント)は、アプリ側 `documents/design.md` の値に揃えています。変えるときは各HTMLの `:root`(`index.html`・`privacy.html`・`tokushoho.html`)を直します。
 - フォントは Google Fonts(Klee One / Shippori Mincho / Material Symbols)を読み込みます。閲覧者のIPアドレスがGoogleに送られるため、気になる場合はフォントのセルフホストを検討してください。
 - `googlead…html` は Google Search Console の所有権確認用ファイルです。削除しないでください。
-- `robots.txt` は置いていません。プロジェクトページ(`/georhythm-site/`配下)に置いても検索エンジンに無視される(有効なのはホスト直下のみ)ためで、クロール制御は不要な方針です。
+- `robots.txt` は置いていません。プロジェクトページ(`/comolog-site/`配下)に置いても検索エンジンに無視される(有効なのはホスト直下のみ)ためで、クロール制御は不要な方針です。
 - 収益化(無料/有料の内訳)には、意図的に触れていません。
