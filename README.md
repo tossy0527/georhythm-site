@@ -26,7 +26,7 @@
 
 ## 入手ボタン
 
-`index.html` の「Google Play で入手」ボタン(ヒーローと最後の2か所。`btn-store` を検索)は、Google Play のストアページ(`https://play.google.com/store/apps/details?id=io.github.tossy0527.georhythm`)へのリンクです。リンク先を変えるときは2か所をそろえて直すこと。Google Play のバッジ画像に差し替える場合は、公式のバッジ素材とガイドラインに従うこと。
+`index.html` の「Google Play で入手」ボタン(ヒーローと最後の2か所。`btn-store` を検索)は、Google Play のストアページ(`https://play.google.com/store/apps/details?id=io.github.tossy0527.georhythm&referrer=utm_source%3Dsite%26utm_campaign%3Dtop`)へのリンクです。`referrer` は、サイトから来た人を Play Console で数えるための参照元です。リンク先を変えるときは2か所をそろえて直すこと。Google Play のバッジ画像に差し替える場合は、公式のバッジ素材とガイドラインに従うこと。
 
 ## ポリシーのページを更新する
 
