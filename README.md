@@ -47,7 +47,7 @@ python3 scripts/build_policies.py --check               # 書き換えずに、�
 
 ## お問い合わせ
 
-フッターの「お問い合わせ」は、押すとダイアログでアドレスを表示し、「アドレスをコピー」「メールアプリで開く」を選べます(JSが使えない環境では通常の `mailto:` リンクとして動きます)。宛先は自動返信フィルタ用の `unagi.laboratory+georhythm@gmail.com`。変更するときは `index.html`(フッターのリンク・ダイアログ内の表示とリンクの3か所)と、アプリ側の原本 `documents/privacy_policy.md`(8. お問い合わせ)・`documents/tokushoho.md`(連絡先)を直し、ポリシーのページを生成し直すこと。
+フッターの「お問い合わせ」は、押すとダイアログでアドレスを表示し、「アドレスをコピー」「メールアプリで開く」を選べます(JSが使えない環境では通常の `mailto:` リンクとして動きます)。宛先は自動返信フィルタ用の `unagi.laboratory+comolog@gmail.com`。変更するときは `index.html`(フッターのリンク・ダイアログ内の表示とリンクの3か所)と、アプリ側の原本 `documents/privacy_policy.md`(8. お問い合わせ)・`documents/tokushoho.md`(連絡先)を直し、ポリシーのページを生成し直すこと。
 
 ## イラストのクレジット
 
